@@ -9,7 +9,7 @@ plugins {
 val mcVersion = libs.versions.minecraft.get()
 
 version = "${prop("mod_version")}+$mcVersion-${prop("mod_loader").lowercase()}"
-group = prop("mod_group_id")
+group = prop("mod_group")
 
 base {
     archivesName = prop("mod_filename")
@@ -119,7 +119,6 @@ tasks.named<ProcessResources>("processResources") {
             "mod_issue" to prop("mod_issue"),
 //            "mod_update_json" to prop("mod_update_json"),
             "mod_homepage" to prop("mod_homepage"),
-            "mod_icon" to prop("mod_icon"),
 //            "mod_credits" to prop("mod_credits"),
             "mod_authors" to prop("mod_authors"),
             "mod_description" to prop("mod_description"),
