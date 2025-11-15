@@ -7,11 +7,6 @@ import net.neoforged.fml.event.config.ModConfigEvent;
 public class ModEvents {
 
     @SubscribeEvent
-    private void onConfigLoading(ModConfigEvent.Loading event) {
-        ModConfig.CONFIG_SPEC.afterReload();
-    }
-
-    @SubscribeEvent
     private void onConfigReloading(ModConfigEvent.Reloading event) {
         ModConfig.CONFIG_SPEC.afterReload();
     }
