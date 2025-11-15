@@ -1,0 +1,24 @@
+[versions]
+neogradle = "7.0.170"
+minecraft = "1.21.1"
+neoforge = "21.1.176"
+
+l2complements = "3.0.19"
+l2hostility = "3.0.12"
+l2library = "3.0.7"
+
+curios = "9.5.1+1.21.1"
+patchouli = "1.21.1-92-neoforge"
+
+[libraries]
+neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
+
+l2complements = { group = "maven.modrinth", name = "l2-complements", version.ref = "l2complements" }
+l2hostility = { group = "maven.modrinth", name = "l2hostility", version.ref = "l2hostility" }
+l2library = { group = "maven.modrinth", name = "l2library", version.ref = "l2library" }
+
+curios =  { group = "maven.modrinth", name = "curios", version.ref = "curios" }
+patchouli = { group = "maven.modrinth", name = "patchouli", version.ref = "patchouli" }
+
+[plugins]
+neogradle = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
