@@ -41,5 +41,5 @@ Copyright (c) 2025 Torikun9971
 
 ### Other
 - [Icon](https://github.com/Torikun9971/L2-Hostility-Xups/blob/1.21.1-neoforge/src/main/resources/assets/l2hostilityxups/icon.png)  
-  Based on L2 Hostility icon by Minecraft-LightLand  
+  Based on [L2 Hostility icon](https://cdn.modrinth.com/data/CbV689EN/860c99f94763666f9a9fc46c423efdf5c4417650_96.webp) by [Minecraft-LightLand](https://github.com/Minecraft-LightLand)  
   Used with permission (not included under MIT License)
