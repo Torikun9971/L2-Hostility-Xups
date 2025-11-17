@@ -18,6 +18,8 @@ This mod is licensed under the MIT License.
 Copyright (c) 2025 Torikun9971
 
 ## Credits
+
+### Library
 - [L2 Hostility](https://github.com/Minecraft-LightLand/L2Hostility) - Author [Minecraft-LightLand](https://github.com/Minecraft-LightLand)  
   License [GNU Lesser General Public License v2.1](https://github.com/Minecraft-LightLand/L2Hostility/blob/1.21/LICENSE)
 
@@ -36,3 +38,8 @@ Copyright (c) 2025 Torikun9971
 
 - [Curios](https://github.com/TheIllusiveC4/Curios) - Author [C4](https://github.com/TheIllusiveC4)  
   License [GNU Lesser General Public License v3.0](https://github.com/TheIllusiveC4/Curios/blob/1.21.x/LICENSE)
+
+### Other
+- [Icon](https://github.com/Torikun9971/L2-Hostility-Xups/blob/1.21.1-neoforge/src/main/resources/assets/l2hostilityxups/icon.png)  
+  Based on L2 Hostility icon by Minecraft-LightLand  
+  Used with permission (not included under MIT License)
