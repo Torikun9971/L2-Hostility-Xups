@@ -4,7 +4,7 @@
 
 </div>
 
-A mod that limits enemies with the Immortal trait in L2 Hostility to revive only a certain number of times.  
+A mod that limits enemies with the Undying trait in L2 Hostility to revive only a certain number of times.  
 
 You can change the number of revives via the config (default is 3).
 
