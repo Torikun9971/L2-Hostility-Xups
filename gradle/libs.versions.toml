@@ -10,6 +10,9 @@ l2library = "3.0.7"
 curios = "9.5.1+1.21.1"
 patchouli = "1.21.1-92-neoforge"
 
+curseforgegradle = "1.1.28"
+minotaur = "2.+"
+
 [libraries]
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
 
@@ -22,3 +25,5 @@ patchouli = { group = "maven.modrinth", name = "patchouli", version.ref = "patch
 
 [plugins]
 neogradle = { id = "net.neoforged.gradle.userdev", version.ref = "neogradle" }
+curseforgegradle = { id = "net.darkhax.curseforgegradle", version.ref = "curseforgegradle" }
+minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }

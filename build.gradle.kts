@@ -1,9 +1,14 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 plugins {
     eclipse
     idea
     `java-library`
     `maven-publish`
     alias(libs.plugins.neogradle)
+
+    alias(libs.plugins.curseforgegradle)
+    alias(libs.plugins.minotaur)
 }
 
 val mcVersion = libs.versions.minecraft.get()
@@ -142,6 +147,10 @@ idea {
     }
 }
 
+
+val releaseTitle = "${prop("mod_name")} For ${prop("mod_loader")} $mcVersion"
+//val changelogFile = file("/CHANGELOG.md")
+
 tasks.register("printReleaseVersion") {
     println(version)
 }
@@ -159,8 +168,65 @@ publishing {
     }
 }
 
+/**
+tasks.register<TaskPublishCurseForge>("curseforge") {
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+    upload(prop("curseforge_id"), tasks.jar) {
+        displayName = releaseTitle
+
+        addEnvironment(prop_list("curseforge_environments"))
+        addModLoader(prop_list("release_loaders"))
+        addJavaVersion(prop_list("curseforge_java_versions"))
+        addGameVersion(prop_list("release_minecraft_versions"))
+
+        withAdditionalFile(sourcesJar())
+        releaseType = prop("release_type")
+
+        /**
+        if (changelogFile.exists()) {
+            changelog = changelogFile
+            changelogType = "markdown"
+        }
+        **/
+    }
+}
+**/
+
+/**
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+
+    projectId = prop("modrinth_id")
+    uploadFile.set(tasks.jar)
+
+    versionName = releaseTitle
+
+    /**
+    if (changelogFile.exists()) {
+        changelog.set(changelogFile.readText())
+    }
+    **/
+
+    versionType.set(prop("release_type"))
+    versionNumber.set(version.toString())
+    loaders.addAll(prop_list("release_loaders").map { it.lowercase() })
+    gameVersions.addAll(prop_list("release_minecraft_versions"))
+
+    dependencies {
+
+    }
+
+    additionalFiles.add(sourcesJar())
+}
+**/
+
 fun prop(key: String): String {
     return properties[key].toString()
+}
+
+fun prop_list(key: String): List<String> {
+    return properties[key].toString().split(",")
 }
 
 fun extra(key: String): String {
@@ -173,4 +239,8 @@ fun Provider<MinimalExternalModuleDependency>.classifier(name: String): String {
 
 fun canSpecifyUser(): Boolean {
     return hasProperty("mc_username") && hasProperty("mc_uuid")
+}
+
+fun sourcesJar(): File {
+    return tasks.named("sourcesJar").get().outputs.files.singleFile
 }
