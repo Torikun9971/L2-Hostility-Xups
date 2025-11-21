@@ -148,7 +148,7 @@ idea {
 }
 
 val releaseTitle = "${prop("mod_name")} For ${prop("mod_loader")} $mcVersion"
-//val changelogFile = file("changelog.md")
+val changelogFile = file("changelog.md")
 
 tasks.register("printReleaseVersion") {
     println(version)
@@ -167,7 +167,6 @@ publishing {
     }
 }
 
-/**
 tasks.register<TaskPublishCurseForge>("curseforge") {
     apiToken = System.getenv("CURSEFORGE_TOKEN")
 
@@ -182,17 +181,13 @@ tasks.register<TaskPublishCurseForge>("curseforge") {
         withAdditionalFile(sourcesJar())
         releaseType = prop("release_type")
 
-        /**
         if (changelogFile.exists()) {
             changelog = changelogFile
             changelogType = "markdown"
         }
-        **/
     }
 }
-**/
 
-/**
 modrinth {
     token = System.getenv("MODRINTH_TOKEN")
 
@@ -201,11 +196,9 @@ modrinth {
 
     versionName = releaseTitle
 
-    /**
     if (changelogFile.exists()) {
         changelog.set(changelogFile.readText())
     }
-    **/
 
     versionType.set(prop("release_type"))
     versionNumber.set(version.toString())
@@ -218,7 +211,6 @@ modrinth {
 
     additionalFiles.add(sourcesJar())
 }
-**/
 
 fun prop(key: String): String {
     return properties[key].toString()
