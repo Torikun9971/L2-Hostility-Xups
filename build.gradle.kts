@@ -185,6 +185,8 @@ tasks.register<TaskPublishCurseForge>("curseforge") {
             changelog = changelogFile
             changelogType = "markdown"
         }
+
+        addRequirement("l2hostility")
     }
 }
 
@@ -206,7 +208,7 @@ modrinth {
     gameVersions.addAll(prop_list("release_minecraft_versions"))
 
     dependencies {
-
+        required.version("l2hostility", libs.versions.l2hostility.get())
     }
 
     additionalFiles.add(sourcesJar())
