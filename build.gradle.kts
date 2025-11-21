@@ -178,7 +178,15 @@ tasks.register<TaskPublishCurseForge>("curseforge") {
         addJavaVersion(*prop_list("curseforge_java_versions").map { "Java $it" }.toTypedArray())
         addGameVersion(*prop_array("release_minecraft_versions"))
 
-        withAdditionalFile(sourcesJar())
+        withAdditionalFile(sourcesJar()).run {
+            displayName = "$releaseTitle - Sources"
+
+            if (changelogFile.exists()) {
+                changelog = changelogFile
+                changelogType = "markdown"
+            }
+        }
+
         releaseType = prop("release_type")
 
         if (changelogFile.exists()) {
