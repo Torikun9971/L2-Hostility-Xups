@@ -122,7 +122,7 @@ tasks.named<ProcessResources>("processResources") {
             "mod_version" to prop("mod_version"),
             "mod_license" to prop("mod_license"),
             "mod_issue" to prop("mod_issue"),
-//            "mod_update_json" to prop("mod_update_json"),
+            "mod_update_json" to prop("mod_update_json"),
             "mod_homepage" to prop("mod_homepage"),
 //            "mod_credits" to prop("mod_credits"),
             "mod_authors" to prop("mod_authors"),
