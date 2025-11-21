@@ -147,7 +147,6 @@ idea {
     }
 }
 
-
 val releaseTitle = "${prop("mod_name")} For ${prop("mod_loader")} $mcVersion"
 //val changelogFile = file("changelog.md")
 

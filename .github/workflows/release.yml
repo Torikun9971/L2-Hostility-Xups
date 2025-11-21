@@ -38,13 +38,13 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: v${{ env.RELEASE_VERSION }}
-          path: ./build/libs/
+          path: build/libs/
 
       - name: Release on Github
         uses: softprops/action-gh-release@v2
         with:
-          files: build/libs/*.jar
           tag_name: v${{ env.RELEASE_VERSION }}
+          files: build/libs/*.jar
 
 #      - name: Release on CurseForge
 #        run: ./gradlew curseforge
