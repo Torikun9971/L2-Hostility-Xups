@@ -1,4 +1,5 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
+import net.darkhax.curseforgegradle.UploadArtifact
 
 plugins {
     eclipse
@@ -183,20 +184,11 @@ tasks.register<TaskPublishCurseForge>("curseforge") {
         withAdditionalFile(sourcesJar()).run {
             displayName = "$releaseTitle - Sources"
 
-            if (changelogFile.exists()) {
-                changelog = changelogFile
-                changelogType = "markdown"
-            }
+            setChangelogAndRelations()
         }
 
         releaseType = prop("release_type")
-
-        if (changelogFile.exists()) {
-            changelog = changelogFile
-            changelogType = "markdown"
-        }
-
-        addRequirement("l2hostility")
+        setChangelogAndRelations()
     }
 }
 
@@ -250,4 +242,12 @@ fun canSpecifyUser(): Boolean {
 
 fun sourcesJar(): File {
     return tasks.named("sourcesJar").get().outputs.files.singleFile
+}
+
+fun UploadArtifact.setChangelogAndRelations() {
+    changelogType = "markdown"
+    changelog = ""
+//    if (changelogFile.exists()) changelog = changelogFile
+
+    addRequirement("l2hostility")
 }
