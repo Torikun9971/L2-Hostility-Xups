@@ -184,11 +184,10 @@ tasks.register<TaskPublishCurseForge>("curseforge") {
         withAdditionalFile(sourcesJar()).run {
             displayName = "$releaseTitle - Sources"
 
-            setChangelogAndRelations()
+            setCommonInfo()
         }
 
-        releaseType = prop("release_type")
-        setChangelogAndRelations()
+        setCommonInfo()
     }
 }
 
@@ -244,10 +243,13 @@ fun sourcesJar(): File {
     return tasks.named("sourcesJar").get().outputs.files.singleFile
 }
 
-fun UploadArtifact.setChangelogAndRelations() {
+fun UploadArtifact.setCommonInfo() {
+    releaseType = prop("release_type")
+
     changelogType = "markdown"
-    changelog = ""
-//    if (changelogFile.exists()) changelog = changelogFile
+    if (changelogFile.exists()) {
+        changelog = changelogFile
+    }
 
     addRequirement("l2hostility")
 }
