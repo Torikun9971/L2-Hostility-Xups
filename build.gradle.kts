@@ -182,8 +182,6 @@ tasks.register<TaskPublishCurseForge>("curseforge") {
         addGameVersion(*prop_array("release_minecraft_versions"))
 
         withAdditionalFile(sourcesJar()).run {
-            displayName = "$releaseTitle - Sources"
-
             setCommonInfo()
         }
 
