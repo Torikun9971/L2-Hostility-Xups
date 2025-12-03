@@ -3,10 +3,10 @@
 - ---
 
 ## For User
-🔖 Change metadata version to use project.version (should fix the update checker false positive)
+🔖 Change metadata version to use project.version (this should fix the update checker’s false-positive
 
 ## For Developer
-🏗️ Change NeoForge plugin from userdev to moddev
+🏗️ Switch NeoForge plugin from userdev to moddev
 
 <br>
 
