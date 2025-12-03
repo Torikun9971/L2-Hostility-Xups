@@ -46,26 +46,34 @@ java {
     withSourcesJar()
 }
 
-minecraft {
-    /*
-    accessTransformers {
-        file("src/main/resources/META-INF/accesstransformer.cfg")
+neoForge {
+    version = libs.versions.neoforge.get()
+
+    parchment {
+        mappingsVersion = libs.versions.parchment.mappings.get()
+        minecraftVersion = mcVersion
     }
-     */
+
+    /**
+    accessTransformers {
+    file("src/main/resources/META-INF/accesstransformer.cfg")
+    }
+     **/
 
     runs {
         configureEach {
             systemProperty("forge.logging.markers", "REGISTRIES")
-            systemProperty("forge.logging.console.level", "debug")
 
-            modSource(project.sourceSets.main.get())
+            logLevel = org.slf4j.event.Level.DEBUG
         }
 
         create("client") {
-            systemProperty("forge.enabledGameTestNamespaces", prop("mod_id"))
+            client()
+
+            systemProperty("neoforge.enabledGameTestNamespaces", prop("mod_id"))
 
             if (canSpecifyUser()) {
-                arguments(
+                programArguments.addAll(
                     "--username", prop("mc_username"),
                     "--uuid", prop("mc_uuid")
                 )
@@ -73,21 +81,33 @@ minecraft {
         }
 
         create("server") {
-            systemProperty("forge.enabledGameTestNamespaces", prop("mod_id"))
-            argument("--nogui")
+            server()
+
+            programArgument("--nogui")
+            systemProperty("neoforge.enabledGameTestNamespaces", prop("mod_id"))
         }
 
         create("gameTestServer") {
-            systemProperty("forge.enabledGameTestNamespaces", prop("mod_id"))
+            type = "gameTestServer"
+
+            systemProperty("neoforge.enabledGameTestNamespaces", prop("mod_id"))
         }
 
         create("data") {
-            arguments(
+            data()
+
+            programArguments.addAll(
                 "--mod", prop("mod_id"),
                 "--all",
-                "--output", file("src/generated/resources/").absolutePath,
-                "--existing", file("src/main/resources/").absolutePath
+                "--output", file("src/generated/resources/").getAbsolutePath(),
+                "--existing", file("src/main/resources/").getAbsolutePath()
             )
+        }
+    }
+
+    mods {
+        create(prop("mod_id")) {
+            sourceSet(sourceSets.main.get())
         }
     }
 }
@@ -97,12 +117,6 @@ sourceSets {
         resources {
             srcDir("src/generated/resources")
         }
-    }
-}
-
-configurations {
-    runtimeClasspath {
-        extendsFrom(localRuntime.get())
     }
 }
 
