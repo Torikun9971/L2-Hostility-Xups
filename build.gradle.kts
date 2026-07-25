@@ -1,15 +1,15 @@
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
-import net.darkhax.curseforgegradle.UploadArtifact
-
 plugins {
+    /** java & neo */
     `java-library`
-    eclipse
-    idea
     alias(libs.plugins.neogradle)
 
+    /** ide */
+    eclipse
+    idea
+
+    /** publish */
     `maven-publish`
-    alias(libs.plugins.curseforgegradle)
-    alias(libs.plugins.minotaur)
+    alias(libs.plugins.mod.publish.plugin)
 }
 
 val mcVersion = libs.versions.minecraft.get()
@@ -167,10 +167,6 @@ idea {
 val releaseTitle = "${prop("mod_name")} ${prop("mod_version")} for ${prop("mod_loader")} $mcVersion"
 val changelogFile = file("changelog.md")
 
-tasks.register("printReleaseVersion") {
-    println(version)
-}
-
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
@@ -184,49 +180,49 @@ publishing {
     }
 }
 
-tasks.register<TaskPublishCurseForge>("curseforge") {
-    apiToken = System.getenv("CURSEFORGE_TOKEN")
+publishMods {
+    file = modJar()
+    changelog = changelogFile.readText()
 
-    disableVersionDetection()
+    modLoaders.add("neoforge")
+    type = STABLE
 
-    upload(prop("curseforge_id"), tasks.jar) {
+    additionalFiles.files += sourcesJar()
+
+    github {
+        accessToken = System.getenv("GITHUB_TOKEN")
+
+        repository = "torikun9971/L2-Hostility-Xups"
+        commitish = "1.21.1-neoforge"
+
+        displayName = "v" + version
+    }
+
+    curseforge {
+        accessToken = System.getenv("CURSEFORGE_TOKEN")
+
+        projectId = "1389149"
+
         displayName = releaseTitle
 
-        addEnvironment(*prop_array("curseforge_environments"))
-        addModLoader(*prop_array("release_loaders"))
-        addJavaVersion(*prop_list("curseforge_java_versions").map { "Java $it" }.toTypedArray())
-        addGameVersion(*prop_array("release_minecraft_versions"))
+        javaVersions.add(JavaVersion.VERSION_21)
+        minecraftVersions.add("1.21.1")
 
-        withAdditionalFile(sourcesJar()).run {
-            setCommonInfo()
-        }
-
-        setCommonInfo()
-    }
-}
-
-modrinth {
-    token = System.getenv("MODRINTH_TOKEN")
-
-    projectId = prop("modrinth_id")
-    uploadFile.set(tasks.jar)
-
-    versionName = releaseTitle
-
-    if (changelogFile.exists()) {
-        changelog.set(changelogFile.readText())
+        client = true
+        server = true
     }
 
-    versionType.set(prop("release_type"))
-    versionNumber.set(version.toString())
-    loaders.addAll(prop_list("release_loaders").map { it.lowercase() })
-    gameVersions.addAll(prop_list("release_minecraft_versions"))
+    modrinth {
+        accessToken = System.getenv("MODRINTH_TOKEN")
 
-    dependencies {
-        required.version("l2hostility", libs.versions.l2hostility.get())
+        projectId = "qfnIda6K"
+
+        displayName = releaseTitle
+
+        minecraftVersions.add("1.21.1")
+
+        environment = CLIENT_AND_SERVER
     }
-
-    additionalFiles.add(sourcesJar())
 }
 
 fun prop(key: String): String {
@@ -253,17 +249,10 @@ fun canSpecifyUser(): Boolean {
     return hasProperty("mc_username") && hasProperty("mc_uuid")
 }
 
-fun sourcesJar(): File {
-    return tasks.named("sourcesJar").get().outputs.files.singleFile
+fun modJar(): File {
+    return tasks.jar.get().outputs.files.singleFile
 }
 
-fun UploadArtifact.setCommonInfo() {
-    releaseType = prop("release_type")
-
-    changelogType = "markdown"
-    if (changelogFile.exists()) {
-        changelog = changelogFile
-    }
-
-    addRequirement("l2hostility")
+fun sourcesJar(): File {
+    return tasks.named("sourcesJar").get().outputs.files.singleFile
 }
