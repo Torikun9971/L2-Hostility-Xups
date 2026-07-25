@@ -189,7 +189,7 @@ publishMods {
     modLoaders.add("neoforge")
     type = STABLE
 
-    additionalFiles.files += sourcesJar()
+    additionalFiles.from(sourcesJar())
 
     github {
         accessToken = System.getenv("GITHUB_TOKEN")
@@ -197,7 +197,8 @@ publishMods {
         repository = "torikun9971/L2-Hostility-Xups"
         commitish = "1.21.1-neoforge"
 
-        displayName = "v" + project.version
+        tagName = "v" + project.version
+        displayName = tagName
     }
 
     curseforge {
@@ -212,6 +213,10 @@ publishMods {
 
         client = true
         server = true
+
+        requires {
+            slug = "l2hostility"
+        }
     }
 
     modrinth {
@@ -224,6 +229,11 @@ publishMods {
         minecraftVersions.add("1.21.1")
 
         environment = CLIENT_AND_SERVER
+
+        requires {
+            slug = "l2hostility"
+            version = libs.versions.l2hostility.get()
+        }
     }
 }
 
