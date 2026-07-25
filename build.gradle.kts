@@ -182,6 +182,8 @@ publishing {
 
 publishMods {
     file = modJar()
+    version = "${project.version}"
+
     changelog = changelogFile.readText()
 
     modLoaders.add("neoforge")
@@ -195,7 +197,7 @@ publishMods {
         repository = "torikun9971/L2-Hostility-Xups"
         commitish = "1.21.1-neoforge"
 
-        displayName = "v" + version
+        displayName = "v" + project.version
     }
 
     curseforge {
