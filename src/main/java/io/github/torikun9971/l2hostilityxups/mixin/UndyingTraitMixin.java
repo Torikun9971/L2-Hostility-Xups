@@ -15,6 +15,10 @@ public class UndyingTraitMixin {
 
     @Inject(method = "onDeath", at = @At("HEAD"), cancellable = true)
     private void l2hostilityxups$onDeath(int level, LivingEntity entity, LivingDeathEvent event, CallbackInfo ci) {
+        if (entity.level().isClientSide()) {
+            return;
+        }
+
         int deathCount = entity.getData(ModAttachmentTypes.DEATH_COUNT);
         int reviveLimit = ModConfig.CONFIG.reviveLimit.get();
 
