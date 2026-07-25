@@ -1,0 +1,36 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+issueTrackerURL="${mod_issue}"
+
+[[mods]]
+    modId="${mod_id}"
+    version="${project_version}"
+    displayName="${mod_name}"
+    logoFile="assets/${mod_id}/icon.png"
+    updateJSONURL="${mod_update_json}"
+    displayURL="${mod_homepage}"
+    #credits="{mod_credits}"
+    authors="${mod_authors}"
+    description='''${mod_description}'''
+
+[[dependencies.${mod_id}]]
+    modId="forge"
+    mandatory=true
+    versionRange="${forge_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="l2hostility"
+    mandatory=true
+    versionRange="${l2hostility_version_range}"
+    ordering="NONE"
+    side="BOTH"

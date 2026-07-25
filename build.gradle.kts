@@ -1,0 +1,304 @@
+import org.gradle.accessors.dm.LibrariesForLibs
+import java.text.SimpleDateFormat
+import java.util.Date
+
+plugins {
+    /** forge & mappings */
+    alias(libs.plugins.forgegradle)
+    alias(libs.plugins.parchment.forgegradle)
+
+    /** mixin */
+    alias(libs.plugins.mixin)
+
+    /** ide */
+    eclipse
+    idea
+
+    /** publish */
+    `maven-publish`
+    alias(libs.plugins.mod.publish.plugin)
+}
+
+val mcVersion = libs.versions.minecraft.get()
+
+version = "${prop("mod_version")}+$mcVersion-${prop("mod_loader").lowercase()}"
+group = prop("mod_group")
+
+base {
+    archivesName = prop("mod_filename")
+}
+
+repositories {
+    maven { url = uri("https://api.modrinth.com/maven") }
+}
+
+dependencies {
+    minecraft(libs.forge())
+    annotationProcessor(libs.mixin.classifier("processor"))
+
+    runtimeOnly(fg.deobf(libs.curios))
+    runtimeOnly(fg.deobf(libs.patchouli))
+
+    runtimeOnly(fg.deobf(libs.l2library))
+    runtimeOnly(fg.deobf(libs.l2complements))
+    implementation(fg.deobf(libs.l2hostility))
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(prop("java_version"))
+    }
+
+    withSourcesJar()
+}
+
+minecraft {
+    mappings(
+        prop("mapping_channel"),
+        prop("mapping_version")
+    )
+//    accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
+
+    copyIdeResources = true
+    generateRunFolders = true
+
+    runs {
+        configureEach {
+            workingDirectory = project.file("run").path
+
+            property("forge.logging.markers", "REGISTRIES")
+            property("forge.logging.console.level", "debug")
+
+            mods {
+                create(prop("mod_id")) {
+                    source(sourceSets.main.get())
+                }
+            }
+        }
+
+        create("client") {
+            property("forge.enabledGameTestNamespaces", prop("mod_id"))
+
+            if (canSpecifyUser()) {
+                args(
+                    "--username", prop("mc_username"),
+                    "--uuid", prop("mc_uuid")
+                )
+            }
+        }
+
+        create("server") {
+            property("forge.enabledGameTestNamespaces", prop("mod_id"))
+            args("--nogui")
+        }
+
+        create("gameTestServer") {
+            property("forge.enabledGameTestNamespaces", prop("mod_id"))
+        }
+
+        create("data") {
+            workingDirectory = project.file("run-data").path
+
+            args(
+                "--mod", prop("mod_id"),
+                "--all",
+                "--output", file("src/generated/resources/"),
+                "--existing", file("src/main/resources/")
+            )
+        }
+    }
+}
+
+mixin {
+    add(sourceSets.main.get(), "${prop("mod_id")}.refmap.json")
+
+    config("${prop("mod_id")}.mixins.json")
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir("src/generated/resources")
+        }
+    }
+}
+
+tasks.named<ProcessResources>("processResources") {
+    val replaceProperties = mapOf(
+        "project_group" to project.group,
+        "project_version" to project.version,
+        "minecraft_version" to mcVersion,
+        "minecraft_version_range" to prop("minecraft_version_range"),
+        "forge_version" to libs.versions.forge.get(),
+        "forge_version_range" to prop("forge_version_range"),
+        "loader_version_range" to prop("loader_version_range"),
+        "l2hostility_version_range" to prop("l2hostility_version_range"),
+        "mod_id" to prop("mod_id"),
+        "mod_name" to prop("mod_name"),
+        "mod_version" to prop("mod_version"),
+        "mod_license" to prop("mod_license"),
+        "mod_issue" to prop("mod_issue"),
+        "mod_update_json" to prop("mod_update_json"),
+        "mod_homepage" to prop("mod_homepage"),
+//        "mod_credits" to prop("mod_credits"),
+        "mod_authors" to prop("mod_authors"),
+        "mod_description" to prop("mod_description")
+    )
+
+    inputs.properties(replaceProperties)
+
+    filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta")) {
+        expand(replaceProperties + mapOf("project" to project))
+    }
+}
+
+tasks.named<Jar>("jar") {
+    manifest {
+        attributes(
+            "Specification-Title" to prop("mod_name"),
+            "Specification-Vendor" to prop("mod_authors"),
+            "Specification-Version" to "1",
+            "Implementation-Title" to project.name,
+            "Implementation-Version" to project.version,
+            "Implementation-Vendor" to prop("mod_authors"),
+            "Implementation-Timestamp" to SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(Date())
+        )
+    }
+
+    finalizedBy("reobfJar")
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+}
+
+eclipse {
+    synchronizationTasks("genEclipseRuns")
+}
+
+idea {
+    module {
+        isDownloadSources = true
+        isDownloadJavadoc = true
+    }
+}
+
+val releaseTitle = "${prop("mod_name")} ${prop("mod_version")} for ${prop("mod_loader")} $mcVersion"
+val changelogFile = file("changelog.md")
+
+publishing {
+    publications {
+        register<MavenPublication>("mavenJava") {
+            artifact(tasks.jar)
+        }
+    }
+    repositories {
+        maven {
+            url = uri("file://${project.projectDir}/mcmodsrepo")
+        }
+    }
+}
+
+publishMods {
+    file = modJar()
+    version = "${project.version}"
+
+    if (changelogFile.exists()) {
+        changelog = changelogFile.readText()
+    }
+
+    modLoaders.add("forge")
+    modLoaders.add("neoforge")
+    type = STABLE
+
+    additionalFiles.from(sourcesJar())
+
+    github {
+        accessToken = System.getenv("GITHUB_TOKEN")
+
+        repository = "torikun9971/L2-Hostility-Xups"
+        commitish = "1.20.1-forge"
+
+        tagName = "v" + project.version
+        displayName = tagName
+    }
+
+    curseforge {
+        accessToken = System.getenv("CURSEFORGE_TOKEN")
+
+        projectId = "1389149"
+
+        displayName = releaseTitle
+
+        javaVersions.add(JavaVersion.VERSION_17)
+        minecraftVersions.add("1.20.1")
+
+        client = true
+        server = true
+
+        requires {
+            slug = "l2hostility"
+        }
+    }
+
+    modrinth {
+        accessToken = System.getenv("MODRINTH_TOKEN")
+
+        projectId = "qfnIda6K"
+
+        displayName = releaseTitle
+
+        minecraftVersions.add("1.20.1")
+
+        environment = CLIENT_AND_SERVER
+
+        requires {
+            slug = "l2hostility"
+            version = libs.versions.l2hostility.get()
+        }
+    }
+}
+
+fun prop(key: String): String {
+    return properties[key].toString()
+}
+
+fun prop_array(key: String): Array<String> {
+    return prop_list(key).toTypedArray()
+}
+
+fun prop_list(key: String): List<String> {
+    return properties[key].toString().split(",")
+}
+
+fun extra(key: String): String {
+    return extra[key].toString()
+}
+
+fun LibrariesForLibs.forge(): String {
+    return buildString {
+        append("net.minecraftforge")
+        append(":")
+        append("forge")
+        append(":")
+        append(mcVersion)
+        append("-")
+        append(libs.versions.forge.get())
+    }
+}
+
+fun Provider<MinimalExternalModuleDependency>.classifier(name: String): String {
+    return "${this.get()}:$name"
+}
+
+fun canSpecifyUser(): Boolean {
+    return hasProperty("mc_username") && hasProperty("mc_uuid")
+}
+
+fun modJar(): File {
+    return tasks.jar.get().outputs.files.singleFile
+}
+
+fun sourcesJar(): File {
+    return tasks.named("sourcesJar").get().outputs.files.singleFile
+}

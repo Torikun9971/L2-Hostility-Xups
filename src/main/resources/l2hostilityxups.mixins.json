@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.torikun9971.l2hostilityxups.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "l2hostilityxups.mixins.refmap.json",
+  "mixins": [
+    "UndyingTraitMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
